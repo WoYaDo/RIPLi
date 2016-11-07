@@ -252,7 +252,7 @@
                 itemCount++;
                 if (line.StartsWith("----"))
                 {
-                    _dtw.AddOrUpdate(frames, gestureName);
+                    _dtw.Add(frames, gestureName);
                     frames = new ArrayList();
                     gestureName = String.Empty;
                     itemCount = 0;

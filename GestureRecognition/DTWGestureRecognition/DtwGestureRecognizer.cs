@@ -139,6 +139,22 @@ namespace DTWGestureRecognition
             _labels.Add(lab);
         }
 
+        /// <sumary>
+        /// Add a seqence with a label to the known sequences library.
+        /// The gesture MUST start on the first observation of the sequence and end on the last one.
+        /// Sequences may have different lengths.
+        /// This function is a copy of AddOrUpdate but can register duplicate gestures
+        /// </sumary>
+        /// <param name="seq">The sequence</param>
+        /// <param name="lab">Sequence name</param>
+        public void Add(ArrayList seq, string lab)
+        {
+            // Add the new entries
+            _sequences.Add(seq);
+            _labels.Add(lab);
+        }
+
+
         /// <summary>
         /// Recognize gesture in the given sequence.
         /// It will always assume that the gesture ends on the last observation of that sequence.
