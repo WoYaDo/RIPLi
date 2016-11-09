@@ -1,0 +1,9 @@
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\obj\Release\MyoSharp.csprojResolveAssemblyReference.cache
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\bin\Release\x64\myo.dll
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\bin\Release\x86\myo.dll
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\bin\Release\MyoSharp.dll
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\bin\Release\MyoSharp.pdb
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\bin\Release\Microsoft.Contracts.dll
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\obj\Release\MyoSharp.rewritten
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\obj\Release\MyoSharp.dll
+C:\Users\Yannick\Downloads\MyoSharp-master\MyoSharp-master\MyoSharp\obj\Release\MyoSharp.pdb
