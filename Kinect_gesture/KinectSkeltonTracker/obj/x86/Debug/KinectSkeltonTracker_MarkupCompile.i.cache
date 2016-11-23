@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\
+C:\Users\wovari\Documents\NGUI\RIPLi\Kinect_gesture\KinectSkeltonTracker\obj\x86\Debug\
 KinectSkeltonTracker
 none
 false
 DEBUG;TRACE
-C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\App.xaml
+C:\Users\wovari\Documents\NGUI\RIPLi\Kinect_gesture\KinectSkeltonTracker\App.xaml
 11151548125
 
 32824670184
 131303130135
 MainWindow.xaml;
 
-False
+True
 
