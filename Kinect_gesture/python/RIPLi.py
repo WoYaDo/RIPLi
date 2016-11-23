@@ -1,10 +1,11 @@
 import time
 import struct
-#from __future__ import print_function
 import myo as libmyo; libmyo.init()
 import time
 import sys
 import urllib2
+import Queue
+import threading
 
 # Send commands to Kodi
 def executeCommand(method):
@@ -24,28 +25,31 @@ def SwitchAdminMonde():
     AdminMode = not(AdminMode)
 
 def DoubleTap():
-    print "DoubleTap"
+    q.put("DoubleTap")
 def WaveIn():
-    print "WaveIn"
+    q.put("WaveIn")
 def WaveOut():
-    print "WaveOut"
+    q.put("WaveOut")
+def FingersSpread():
+    q.put("FingersSpread")
 
 def WaveRight():
-    print "WaveRight"
+    q.put("WaveRight")
 def WaveLeft():
-    print "WaveLeft"
+    q.put("WaveLeft")
 def SwipeLeft():
-    print "SwiptLeft"
+    q.put("SwiptLeft")
 def SwipeRight():
-    print "SwipeRight"
+    q.put("SwipeRight")
 def Menu():
-    print "Menu"
+    q.put("Menu")
 
 def MyoDispatcher(pose):
     global AdminMode
     if(pose == libmyo.Pose.fist):
+        print "fist"
         SwitchAdminMonde()
-    elif(AdminMode):
+    elif(not(AdminMode)):
         pass
     elif(pose == libmyo.Pose.double_tap):
         DoubleTap()
@@ -53,15 +57,17 @@ def MyoDispatcher(pose):
         WaveIn()
     elif(pose == libmyo.Pose.wave_out):
         WaveOut()
+    elif(pose == libmyo.Pose.fingers_spread):
+        FingersSpread()
 
 def GestureDispatcher(gesture):
-    return {
-        'Waved with right hand': WaveRight(),
-        'Waved with left hand': WaveLeft(),
-        'Swiped left': SwipeLeft(),
-        'Swiped right': SwipeRight(),
-        'Menu': Menu()
-    }
+    if AdminMode:
+        pass
+    elif gesture == 'Waved with right hand': WaveRight()
+    elif gesture == 'Waved with left hand': WaveLeft()
+    elif gesture == 'Swiped left': SwipeLeft()
+    elif gesture =='Swiped right': SwipeRight()
+    elif gesture == 'Menu': Menu()
 #-------------------------------------------------------------------------------
 class Listener(libmyo.DeviceListener):
     """
@@ -99,7 +105,6 @@ class Listener(libmyo.DeviceListener):
         if self.emg:
             for comp in self.emg:
                 parts.append(str(comp).ljust(5))
-        #print('\r' + ''.join('[{0}]'.format(p) for p in parts), end='')
         sys.stdout.flush()
 
     def on_connect(self, myo, timestamp, firmware_version):
@@ -118,10 +123,8 @@ class Listener(libmyo.DeviceListener):
             if pose != libmyo.Pose.rest:
                 MyoDispatcher(pose)
                 self.pose_lock = True
-                print("LOCK")
             self.output()
         elif(pose == libmyo.Pose.rest):
-            print("RESET LOCK")
             self.pose_lock = False
             self.pose = pose
 
@@ -149,13 +152,11 @@ class Listener(libmyo.DeviceListener):
         self.output()
 
     def on_event(self, kind, event):
-        #print("on_event")
         """
         Called before any of the event callbacks.
         """
 
     def on_event_finished(self, kind, event):
-        #print("on event finished")
         """
         Called after the respective event callbacks have been
         invoked. This method is *always* triggered, even if one of
@@ -199,7 +200,7 @@ class Listener(libmyo.DeviceListener):
         """
 
 
-def main():
+def mainMyo():
     print("Connecting to Myo ... Use CTRL^C to exit.")
     try:
         hub = libmyo.Hub()
@@ -220,27 +221,29 @@ def main():
         print("Shutting down hub...")
         hub.shutdown()
 
-
-if __name__ == '__main__':
-    main()
-
 # Connection to the pipe --> http://jonathonreinhart.blogspot.be/2012/12/named-pipes-between-c-and-python.html
 f = open(r'\\.\pipe\NPtest', 'r+b', 0)
 i = 1
 
-main()
-
-while True:
+def mainKinect():
+    global i
     s = 'Message[{0}]'.format(i)
     i += 1
-
     n = struct.unpack('I', f.read(4))[0]    # Read str length
     s = f.read(n)                           # Read str
     f.seek(0)                               # Important!!!
-    print 'Read:', s
-
-    GestureDispatcher(s);
-
-    time.sleep(2)
+    GestureDispatcher(s)
+    mainKinect()
 #-------------------------------------------------------------------------------
+q = Queue.Queue()
+t1 = threading.Thread(target=mainMyo)
+t1.daemon = True
+t1.start()
 
+t2 = threading.Thread(target=mainKinect)
+t2.daemon = True
+t2.start()
+
+while True:
+    s = q.get()
+    print s
