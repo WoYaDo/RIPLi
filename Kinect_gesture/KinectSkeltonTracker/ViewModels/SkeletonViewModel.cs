@@ -618,6 +618,7 @@ namespace KinectSkeltonTracker
             {
                 this.GestureDetected = true;
                 this.GestureText = "Swiped right";
+                MainWindow.WriteToBuffer(this.GestureText.ToString());
                 this.textTimer.Start();
             }
             else if (e.GestureType == GestureType.Menu)

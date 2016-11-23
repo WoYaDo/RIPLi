@@ -16,6 +16,9 @@ namespace KinectSkeltonTracker
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Microsoft.Research.Kinect.Nui;
+    using System.IO.Pipes;
+    using System.IO;
+    using System.Text;
 
     #endregion
 
@@ -24,16 +27,33 @@ namespace KinectSkeltonTracker
     /// </summary>
     public partial class MainWindow : Window
     {
+        static NamedPipeServerStream server;
+        static BinaryWriter bw;
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
         /// </summary>
         public MainWindow()
         {
+            server = new NamedPipeServerStream("NPtest");
+            Console.WriteLine("Waiting for connection...");
+            server.WaitForConnection();
+
+            Console.WriteLine("Connected.");
+            bw = new BinaryWriter(server);
+
             InitializeComponent();
             MainViewModel model = new MainViewModel();
             this.DataContext = model;
             this.SkeletonControl.ItemsSource = model.Skeletons;
             model.Kinect.ImageFrameReady += new EventHandler<Microsoft.Research.Kinect.Nui.ImageFrameReadyEventArgs>(this.Kinect_ImageFrameReady);
+        }
+
+        public static void WriteToBuffer(String str)
+        {
+            var buf = Encoding.ASCII.GetBytes(str);     // Get ASCII byte array     
+            bw.Write((uint)buf.Length);                // Write string length
+            bw.Write(buf);                              // Write string
+            Console.WriteLine("Wrote: \"{0}\"", str);
         }
 
         /// <summary>
