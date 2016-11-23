@@ -1,0 +1,15 @@
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.csprojResolveAssemblyReference.cache
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\MainWindow.g.cs
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\App.g.cs
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker_MarkupCompile.cache
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker_MarkupCompile.lref
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\MainWindow.baml
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.g.resources
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.Properties.Resources.resources
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.csproj.GenerateResource.Cache
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.exe
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.pdb
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\bin\Debug\KinectSkeltonTracker.exe
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\bin\Debug\KinectSkeltonTracker.pdb
+C:\Users\wovari\Downloads\4747.Kinect\KinectSkeltonTracker\bin\Debug\Microsoft.Research.Kinect.dll
