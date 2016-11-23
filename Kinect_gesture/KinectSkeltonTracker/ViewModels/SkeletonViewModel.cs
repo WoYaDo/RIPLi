@@ -600,18 +600,21 @@ namespace KinectSkeltonTracker
             {
                 this.GestureDetected = true;
                 this.GestureText = "Waved with right hand";
+                MainWindow.WriteToBuffer(this.GestureText.ToString());
                 this.textTimer.Start();
             }
             else if (e.GestureType == GestureType.WaveLeft)
             {
                 this.GestureDetected = true;
                 this.GestureText = "Waved with left hand";
+                MainWindow.WriteToBuffer(this.GestureText.ToString());
                 this.textTimer.Start();
             }
             else if (e.GestureType == GestureType.LeftSwipe)
             {
                 this.GestureDetected = true;
                 this.GestureText = "Swiped left";
+                MainWindow.WriteToBuffer(this.GestureText.ToString());
                 this.textTimer.Start();
             }
             else if (e.GestureType == GestureType.RightSwipe)
@@ -625,6 +628,7 @@ namespace KinectSkeltonTracker
             {
                 this.GestureDetected = true;
                 this.GestureText = "Menu";
+                MainWindow.WriteToBuffer(this.GestureText.ToString());
                 this.textTimer.Start();
             }
         }
@@ -672,7 +676,7 @@ namespace KinectSkeltonTracker
             MenuSegments1 menuSegment = new MenuSegments1();
             for (int i = 0; i < 20; i++)
             {
-                // gesture consists of the same thing 20 times 
+                // gesture consists of the same thing 20 times
                 menuSegments[i] = menuSegment;
             }
 

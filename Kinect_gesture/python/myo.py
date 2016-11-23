@@ -4,25 +4,9 @@ import myo as libmyo; libmyo.init()
 import time
 import sys
 
+import main
+
 import urllib2
-
-def executeCommand(method):
-    start = 'http://localhost:8080/jsonrpc?request={"jsonrpc":%20"2.0",%20"id":%201,%20"method":%20"'
-    end = '"}'
-    url = start + method + end
-    response = urllib2.urlopen(url)
-    html = response.read()
-    #print(html)
-
-def dispatcher(pose):
-    if(pose == libmyo.Pose.fist):
-        executeCommand("Input.Back")
-    elif(pose == libmyo.Pose.double_tap):
-        executeCommand("Input.Select")
-    elif(pose == libmyo.Pose.wave_in):
-        executeCommand("Input.Left")
-    elif(pose == libmyo.Pose.wave_out):
-        executeCommand("Input.Right")
 
 class Listener(libmyo.DeviceListener):
     """
@@ -77,7 +61,7 @@ class Listener(libmyo.DeviceListener):
         if(not self.pose_lock):
             self.pose = pose
             if pose != libmyo.Pose.rest:
-                dispatcher(pose)
+                main.MyoDispatcher(pose)
                 self.pose_lock = True
                 print("LOCK")
             self.output()
