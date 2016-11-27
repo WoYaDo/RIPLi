@@ -3,7 +3,8 @@ import tkFileDialog as filedialog
 import PIL
 from PIL import Image
 from PIL import ImageTk
-
+import glob
+import os
 
 root = Tk()
 def setKey(key,callback):
@@ -22,7 +23,6 @@ def donothing():
 currentmode = 'root'
 rootindex = 1
 editindex = 1
-fileindex = 1
 
 def leftkey(event):
     global currentmode,rootindex,editindex,fileindex
@@ -37,9 +37,6 @@ def leftkey(event):
         editindex = editindex - 1
         rootindex = max(1,editindex)
         editmenubar.entryconfig(editindex,background="red")
-    elif currentmode == 'openfile':
-        fileindex = fileindex - 1
-        rootindex = max(1,fileindex)
     else:
         print currentmode
 
@@ -57,9 +54,6 @@ def rightkey(event):
         editindex = editindex + 1
         rootindex = min(4,editindex)
         editmenubar.entryconfig(editindex,background="red")
-    elif currentmode == 'openfile':
-        fileindex = fileindex + 1
-        rootindex = min(4,fileindex)
     else:
         print currentmode
 
@@ -70,8 +64,6 @@ def enterKey(event):
     elif currentmode == 'edit':
         editmenubar.entryconfig(editindex,background="green")
         editmenubar.invoke(editindex)
-    elif currentmode == 'openfile':
-        pass
     else:
         print currentmode
    
@@ -101,12 +93,9 @@ def enterEditMode():
 
     root.config(menu=editmenubar)
 
-def openfilemenu():
 
-    for widget in imageframe.winfo_children():
-        widget.destroy()
-
-    filename = filedialog.askopenfilename()
+def openImage(filedialog,filename):
+    filedialog.destroy()
     img = Image.open(filename)
     phimg = ImageTk.PhotoImage(img)
     phimg.current = img
@@ -116,6 +105,65 @@ def openfilemenu():
     panel.filename = filename
     panel.image = phimg
     panel.pack(side = "bottom", fill = "both", expand = "yes")
+
+    setKey("left",leftkey)
+    setKey("right",rightkey)
+    setKey("return",enterKey)
+
+
+def openfilemenu():
+    for widget in imageframe.winfo_children():
+        widget.destroy()
+
+
+    fileindex = [0]
+    filedialog = Toplevel(root)
+
+    size = 128, 128
+    COLUMNS = 10
+    image_count = 0
+
+    filenames = glob.glob(os.path.join(os.getcwd(), '*.gif'))
+    labels = []
+
+    def left(event):
+        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=0)
+        fileindex[0] = max(0,fileindex[0] - 1)
+        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=5)
+
+    def right(event):
+        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=0)
+        fileindex[0] = min(len(filenames),fileindex[0] + 1)
+        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=5)
+        pass
+
+    setKey('left',left)
+    setKey('right',right)
+    setKey('return',lambda e: openImage(filedialog,filenames[fileindex[0]]))
+
+    for infile in filenames:
+
+        image_count += 1
+        r, c = divmod(image_count - 1, COLUMNS)
+        img = Image.open(infile)
+        img.thumbnail(size)
+        phimg = ImageTk.PhotoImage(img)
+
+        label = Label(filedialog,image = phimg)
+        label.image = phimg
+
+
+        label.grid(row=r, column=c)
+
+        labels.append(label)
+
+    labels[fileindex[0]].config(highlightbackground="red",highlightthickness=5)
+
+
+
+
+
+
 
 def save():
     if (not imageframe.winfo_children()):
