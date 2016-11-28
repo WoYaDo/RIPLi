@@ -16,8 +16,6 @@ def executeCommand(method):
     html = response.read()
     #print(html)
 #-------------------------------------------------------------------------------
-
-
 # Event handlers + dispatchers etc.
 AdminMode = False
 def SwitchAdminMonde():
@@ -134,6 +132,7 @@ class Listener(libmyo.DeviceListener):
         #self.output()
 
     def on_accelerometor_data(self, myo, timestamp, acceleration):
+        print acceleration
         pass
 
     def on_gyroscope_data(self, myo, timestamp, gyroscope):
