@@ -23,8 +23,8 @@ def donothing():
    return 0
 
 currentmode = 'root'
-rootindex = 1
-editindex = 1
+rootindex = 0
+editindex = 0
 
 def leftkey(event):
     global currentmode,rootindex,editindex,fileindex
@@ -32,12 +32,12 @@ def leftkey(event):
     if currentmode == 'root':
         menubar.entryconfig(rootindex,background="lightgrey")
         rootindex = rootindex - 1
-        rootindex = max(1,rootindex)
+        rootindex = max(0,rootindex)
         menubar.entryconfig(rootindex,background="red")
     elif currentmode == 'edit':
         editmenubar.entryconfig(editindex,background="lightgrey")
         editindex = editindex - 1
-        rootindex = max(6,editindex)
+        rootindex = max(0,editindex)
         editmenubar.entryconfig(editindex,background="red")
     else:
         print currentmode
@@ -49,12 +49,12 @@ def rightkey(event):
     if currentmode == 'root':
         menubar.entryconfig(rootindex,background="lightgrey")
         rootindex = rootindex + 1
-        rootindex = min(4,rootindex)
+        rootindex = min(3,rootindex)
         menubar.entryconfig(rootindex,background="red")
     elif currentmode == 'edit':
         editmenubar.entryconfig(editindex,background="lightgrey")
         editindex = editindex + 1
-        rootindex = min(6,editindex)
+        rootindex = min(5,editindex)
         editmenubar.entryconfig(editindex,background="red")
     else:
         print currentmode
@@ -70,34 +70,68 @@ def enterKey(event):
         print currentmode
    
 ######################root#####################
+class MyMenu:
+    def __init__(self,root):
+        self.root = root
+        self.entries = []
+        self.buttonframe = Frame(self.root)
+        self.buttonframe.grid(row=2, column=0, columnspan=2)
+        
+    def add_command(self,label = False,command = False):
+        button = Button(self.buttonframe,text = label,command = command)
+        button.grid(row=0,column = len(self.entries))
+        #button.pack()
+        self.entries.append(button)
+    def entryconfig(self,idx,**kwargs):
+        button = self.entries[idx]
+        button.config(kwargs)
+
+    def invoke(self,idx):
+        self.entries[idx].invoke()
+
+    def hide(self):
+        self.buttonframe.pack_forget()
+    def show(self):
+        self.buttonframe.pack()
+    
 
 imageframe = Frame(root,height=200,width=300)
-editmenubar = Menu(root)
+
+
+
+editmenubar = MyMenu(root)
 editmenubar.add_command(label="Rotate")
 editmenubar.add_command(label="Scale")
 editmenubar.add_command(label="Brightness")
 editmenubar.add_command(label="Contrast")
 editmenubar.add_command(label="Filter")
 editmenubar.add_command(label="Close")
+editmenubar.show()
+editmenubar.hide()
 
 def enterEditMode():
     if (not imageframe.winfo_children()):
         return;
     global currentmode
-    editindex = 1
+
+    editmenubar.show()
+    menubar.hide()
+    
+    editindex = 0
     currentmode = 'edit'
     #editmenubar = Menu(root)
 
-    editmenubar.entryconfig(1, command=rotate)
-    editmenubar.entryconfig(2, command=scale)
-    editmenubar.entryconfig(3, command=brightness)
-    editmenubar.entryconfig(4, command=contrast)
-    editmenubar.entryconfig(5, command=ifilter)
-    editmenubar.entryconfig(6, command=closeedit)
+    
+    editmenubar.entryconfig(0, command=rotate)
+    editmenubar.entryconfig(1, command=scale)
+    editmenubar.entryconfig(2, command=brightness)
+    editmenubar.entryconfig(3, command=contrast)
+    editmenubar.entryconfig(4, command=ifilter)
+    editmenubar.entryconfig(5, command=closeedit)
 
-    editmenubar.entryconfig(1,background="red")
+    editmenubar.entryconfig(0,background="red")
 
-    root.config(menu=editmenubar)
+    
 
 
 def openImage(filedialog,filename):
@@ -133,14 +167,14 @@ def openfilemenu():
     labels = []
 
     def left(event):
-        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=0)
+        labels[fileindex[0]].config(state="normal")
         fileindex[0] = max(0,fileindex[0] - 1)
-        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=5)
+        labels[fileindex[0]].config(state="active")
 
     def right(event):
-        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=0)
+        labels[fileindex[0]].config(state="normal")
         fileindex[0] = min(len(filenames)-1,fileindex[0] + 1)
-        labels[fileindex[0]].config(highlightbackground="red",highlightthickness=5)
+        labels[fileindex[0]].config(state="active")
         pass
 
     setKey('left',left)
@@ -155,7 +189,7 @@ def openfilemenu():
         img.thumbnail(size)
         phimg = ImageTk.PhotoImage(img)
 
-        label = Label(filedialog,image = phimg)
+        label = Label(filedialog,image = phimg,borderwidth=5,activebackground="red")
         label.image = phimg
 
 
@@ -163,7 +197,7 @@ def openfilemenu():
 
         labels.append(label)
 
-    labels[fileindex[0]].config(highlightbackground="red",highlightthickness=5)
+    labels[fileindex[0]].config(state="active")
 
 
 
@@ -176,19 +210,20 @@ def save():
         return;
     label = imageframe.winfo_children()[0]
     label.image.current.save(label.filename)
-    menubar.entryconfig(3,background="green")
+    menubar.entryconfig(2,background="green")
 
 def quit():
     root.destroy()
 
-menubar = Menu(root)
+    
+
+menubar = MyMenu(root)
 menubar.add_command(label="Edit", command=enterEditMode)
 menubar.add_command(label="Open", command=openfilemenu)
 menubar.add_command(label="Save", command=save)
 menubar.add_command(label="Close", command=quit)
-menubar.entryconfig(1,background="red")
-
-root.config(menu=menubar)
+menubar.entryconfig(0,background="red")
+menubar.show()
 imageframe.pack()
 
 ###############################################
@@ -414,10 +449,12 @@ def chooseimage():
 def closeedit():
     global currentmode,editindex,rootindex
     currentmode = 'root'
-    rootindex = 1
+    rootindex = 0
     editmenubar.entryconfig(editindex,background="lightgrey")
-    editindex = 1
-    root.config(menu=menubar)
+    editindex = 0
+
+    editmenubar.hide()
+    menubar.show()
 
 
 
