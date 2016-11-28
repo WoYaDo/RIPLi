@@ -132,7 +132,11 @@ class Listener(libmyo.DeviceListener):
         #self.output()
 
     def on_accelerometor_data(self, myo, timestamp, acceleration):
-        print acceleration
+    	print "-------------"
+        print acceleration[0]
+	print acceleration[1]
+	print acceleration[2]
+	print "-------------"
         pass
 
     def on_gyroscope_data(self, myo, timestamp, gyroscope):
