@@ -139,7 +139,7 @@ def openfilemenu():
 
     def right(event):
         labels[fileindex[0]].config(highlightbackground="red",highlightthickness=0)
-        fileindex[0] = min(len(filenames),fileindex[0] + 1)
+        fileindex[0] = min(len(filenames)-1,fileindex[0] + 1)
         labels[fileindex[0]].config(highlightbackground="red",highlightthickness=5)
         pass
 
