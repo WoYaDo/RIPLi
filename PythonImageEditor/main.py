@@ -7,17 +7,45 @@ from PIL import ImageEnhance
 from functools import partial
 import glob
 import os
+import threading
+
+from RIPLi import getFirstEvent
+
+leftCallback = lambda e: 0
+rightCallback = lambda e: 0
+returnCallback = lambda e: 0
+escapeCallback = lambda e: 0
+active = True
+def executeCommand():
+    print "starting execute command"
+  #  while active:
+    commandString = getFirstEvent()
+    print commandString
+    if commandString == 'WaveIn':
+        leftCallback(None)
+    elif commandString == 'WaveOut':
+        rightCallback(None)
+    elif commandString == 'DoubleTap':
+        returnCallback(None)
+    elif commandString == 'FingersSpread':
+        escapeCallback(None)
+    root.after(100,executeCommand)
 
 root = Tk()
 def setKey(key,callback):
+    global leftCallback,rightCallback,returnCallback,escapeCallback
     if key == 'left':
-        root.bind("<Left>",callback)
+        #root.bind("<Left>",callback)
+        leftCallback = callback
     elif key == 'right':
-        root.bind("<Right>",callback)
+        #root.bind("<Right>",callback)
+        rightCallback = callback
     elif key =='return':
-        root.bind("<Return>",callback)
+        #root.bind("<Return>",callback)
+        returnCallback = callback
     elif key =="back":
-        root.bind("<Escape>",callback)
+        #root.bind("<Escape>",callback)
+        escapeCallback = callback
 
 def donothing():
    return 0
@@ -54,7 +82,7 @@ def rightkey(event):
     elif currentmode == 'edit':
         editmenubar.entryconfig(editindex,background="lightgrey")
         editindex = editindex + 1
-        rootindex = min(5,editindex)
+        editindex = min(5,editindex)
         editmenubar.entryconfig(editindex,background="red")
     else:
         print currentmode
@@ -163,7 +191,7 @@ def openfilemenu():
     COLUMNS = 10
     image_count = 0
 
-    filenames = glob.glob(os.path.join(os.getcwd(), '*[!.py]'))
+    filenames = glob.glob(os.path.join(os.getcwd(), '*[!.py ][!.rar]'))
     labels = []
 
     def left(event):
@@ -212,7 +240,9 @@ def save():
     label.image.current.save(label.filename)
     menubar.entryconfig(2,background="green")
 
-def quit():
+def myquit():
+    global active
+    active =False
     root.destroy()
 
     
@@ -221,7 +251,7 @@ menubar = MyMenu(root)
 menubar.add_command(label="Edit", command=enterEditMode)
 menubar.add_command(label="Open", command=openfilemenu)
 menubar.add_command(label="Save", command=save)
-menubar.add_command(label="Close", command=quit)
+menubar.add_command(label="Close", command=myquit)
 menubar.entryconfig(0,background="red")
 menubar.show()
 imageframe.pack()
@@ -464,4 +494,11 @@ def closeedit():
 setKey("left",leftkey)
 setKey("right",rightkey)
 setKey("return",enterKey)
+
+root.after(100,executeCommand)
 root.mainloop()
+#t = threading.Thread(target=executeCommand)
+#t.daemon = True
+#t.start()
+
+
