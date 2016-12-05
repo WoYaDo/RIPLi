@@ -1,3 +1,6 @@
+#import xbmcaddon
+#import xbmcgui
+
 import time
 import struct
 import myo as libmyo; libmyo.init()
@@ -6,6 +9,9 @@ import sys
 import urllib2
 import Queue
 import threading
+
+#addon       = xbmcaddon.Addon()
+#addonname   = addon.getAddonInfo('name')
 
 # Send commands to Kodi
 def executeCommand(method):
@@ -132,13 +138,6 @@ class Listener(libmyo.DeviceListener):
         #self.output()
 
     def on_accelerometor_data(self, myo, timestamp, acceleration):
-        """
-        print "-------------"
-        print acceleration[0]
-        print acceleration[1]
-        print acceleration[2]
-        print "-------------"
-        """
         pass
 
     def on_gyroscope_data(self, myo, timestamp, gyroscope):
@@ -227,37 +226,36 @@ def mainMyo():
         hub.shutdown()
 
 # Connection to the pipe --> http://jonathonreinhart.blogspot.be/2012/12/named-pipes-between-c-and-python.html
-kinectConnected = False
-try:
-    time.sleep(2)
-    f = open(r'\\.\pipe\NPtest', 'r+b', 0)
-    i = 1
-    kinectConnected = True
-except(IOError):
-    print "Running in myo only mode"
+f = open(r'\\.\pipe\NPtest', 'r+b', 0)
+i = 1
 
 def mainKinect():
-    while kinectConnected:
-        global i
-        s = 'Message[{0}]'.format(i)
-        i += 1
-        n = struct.unpack('I', f.read(4))[0]    # Read str length
-        s = f.read(n)                           # Read str
-        f.seek(0)                               # Important!!!
-        GestureDispatcher(s)
+    global i
+    s = 'Message[{0}]'.format(i)
+    i += 1
+    n = struct.unpack('I', f.read(4))[0]    # Read str length
+    s = f.read(n)                           # Read str
+    f.seek(0)                               # Important!!!
+    GestureDispatcher(s)
+    mainKinect()
 #-------------------------------------------------------------------------------
 q = Queue.Queue()
 t1 = threading.Thread(target=mainMyo)
-#t1.daemon = True
+t1.daemon = True
 t1.start()
 
 t2 = threading.Thread(target=mainKinect)
-#t2.daemon = True
+t2.daemon = True
 t2.start()
-"""
+
 while True:
     s = q.get()
-    print s
-"""
-def getFirstEvent():
-    return q.get()
+    if(s == "FingersSpread" or s == "WaveLeft"):
+        executeCommand("Input.Back")
+    elif(s == "DoubleTap" or s ==  "WaveRight"):
+        executeCommand("Input.Select")
+    elif(s == "WaveIn" or s == "SwipeLeft"):
+        executeCommand("Input.Left")
+    elif(s == "WaveOut" or s == "SwipeRight"):
+        executeCommand("Input.Right")
+    #xbmcgui.Dialog().ok(addonname, s, "Brol", "Brol")

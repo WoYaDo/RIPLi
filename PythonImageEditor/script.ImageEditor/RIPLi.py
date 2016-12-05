@@ -36,7 +36,7 @@ def WaveRight():
 def WaveLeft():
     q.put("WaveLeft")
 def SwipeLeft():
-    q.put("SwiptLeft")
+    q.put("SwipeLeft")
 def SwipeRight():
     q.put("SwipeRight")
 def Menu():

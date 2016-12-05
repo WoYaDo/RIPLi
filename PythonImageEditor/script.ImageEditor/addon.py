@@ -1,5 +1,5 @@
-import xbmcaddon
-import xbmcgui
+#import xbmcaddon
+#import xbmcgui
 
 from Tkinter import *
 import tkFileDialog as filedialog
@@ -15,8 +15,8 @@ import threading
 from RIPLi import getFirstEvent
 
 
-addon       = xbmcaddon.Addon()
-addonname   = addon.getAddonInfo('name')
+#addon       = xbmcaddon.Addon()
+#addonname   = addon.getAddonInfo('name')
 
 leftCallback = lambda e: 0
 rightCallback = lambda e: 0
@@ -28,13 +28,13 @@ def executeCommand():
   #  while active:
     commandString = getFirstEvent()
     print commandString
-    if commandString == 'WaveIn':
+    if commandString == 'WaveIn' or commandString == "SwipeLeft":
         leftCallback(None)
-    elif commandString == 'WaveOut':
+    elif commandString == 'WaveOut' or commandString == "SwipeRight":
         rightCallback(None)
-    elif commandString == 'DoubleTap':
+    elif commandString == 'DoubleTap' or commandString == "WaveRight":
         returnCallback(None)
-    elif commandString == 'FingersSpread':
+    elif commandString == 'FingersSpread' or commandString == "WaveLeft":
         escapeCallback(None)
     root.after(100,executeCommand)
 
@@ -198,7 +198,7 @@ def openfilemenu():
     COLUMNS = 10
     image_count = 0
 
-    filenames = glob.glob(os.path.join(os.getcwd(), '*[!.py ][!.rar]'))
+    filenames = glob.glob(os.path.join(os.getcwd(), '*[.jpg ][.jpeg][.png][.gif]'))
     labels = []
 
     def left(event):
