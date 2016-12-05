@@ -185,6 +185,22 @@ def openImage(filedialog,filename):
     setKey("right",rightkey)
     setKey("return",enterKey)
 
+def openImage(filename):
+    img = Image.open(filename)
+    phimg = ImageTk.PhotoImage(img)
+    phimg.current = img
+    phimg.original = img
+    phimg.rotation = 0
+    panel = Label(imageframe, image = phimg)
+    panel.filename = filename
+    panel.image = phimg
+    panel.pack(side = "bottom", fill = "both", expand = "yes")
+
+    setKey("left",leftkey)
+    setKey("right",rightkey)
+    setKey("return",enterKey)
+
+
 
 def openfilemenu():
     for widget in imageframe.winfo_children():
@@ -503,4 +519,10 @@ setKey("right",rightkey)
 setKey("return",enterKey)
 
 root.after(100,executeCommand)
-root.mainloop()
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        root.after(0,openImage,sys.argv[1])
+        root.mainloop()
+    else:
+        root.mainloop()

@@ -28,3 +28,5 @@ C:\Users\wovari\Documents\NGUI\RIPLi\Kinect_gesture\KinectSkeltonTracker\obj\x86
 C:\Users\wovari\Documents\NGUI\RIPLi\Kinect_gesture\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.g.resources
 C:\Users\wovari\Documents\NGUI\RIPLi\Kinect_gesture\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.Properties.Resources.resources
 C:\Users\wovari\Documents\NGUI\RIPLi\Kinect_gesture\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.csproj.GenerateResource.Cache
+C:\Users\Yannick\Downloads\RIPLi\Kinect_gesture\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.exe
+C:\Users\Yannick\Downloads\RIPLi\Kinect_gesture\KinectSkeltonTracker\obj\x86\Debug\KinectSkeltonTracker.pdb
