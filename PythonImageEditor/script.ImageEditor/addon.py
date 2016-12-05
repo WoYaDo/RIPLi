@@ -23,6 +23,21 @@ rightCallback = lambda e: 0
 returnCallback = lambda e: 0
 escapeCallback = lambda e: 0
 active = True
+def executeCommand():
+    print "starting execute command"
+  #  while active:
+    commandString = getFirstEvent()
+    print commandString
+    if commandString == 'WaveIn':
+        leftCallback(None)
+    elif commandString == 'WaveOut':
+        rightCallback(None)
+    elif commandString == 'DoubleTap':
+        returnCallback(None)
+    elif commandString == 'FingersSpread':
+        escapeCallback(None)
+    root.after(100,executeCommand)
+
 root = Tk()
 def setKey(key,callback):
     global leftCallback,rightCallback,returnCallback,escapeCallback
