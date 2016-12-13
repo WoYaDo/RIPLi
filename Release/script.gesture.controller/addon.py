@@ -7,11 +7,8 @@ import urllib2
 import Queue
 import threading
 
-import xbmc, xbmcgui, xmbcaddon
+import xbmc, xbmcgui
 
-__addon__ = xbmcaddon.Addon()
-__addonname__ = __addon__.getAddonInfo('name')
-__icon__ = __addon__.getAddonInfo('icon')
  
 
 
@@ -54,6 +51,8 @@ def MyoDispatcher(pose):
     global AdminMode
     if(pose == libmyo.Pose.fist):
         print "fist"
+        dialog = xbmcgui.Dialog()
+        dialog.ok("Fisted!!")
         SwitchAdminMonde()
     elif(not(AdminMode)):
         pass
@@ -139,11 +138,7 @@ class Listener(libmyo.DeviceListener):
         #self.orientation = orientation
         #self.output()
 
-    def on_accelerometor_data(self, myo, timestamp, acceleration):
-        pass
 
-    def on_gyroscope_data(self, myo, timestamp, gyroscope):
-        pass
 
     def on_emg_data(self, myo, timestamp, emg):
         self.emg = emg
@@ -157,37 +152,13 @@ class Listener(libmyo.DeviceListener):
         self.locked = True
         self.output()
 
-    def on_event(self, kind, event):
-        """
-        Called before any of the event callbacks.
-        """
-
-    def on_event_finished(self, kind, event):
-        """
-        Called after the respective event callbacks have been
-        invoked. This method is *always* triggered, even if one of
-        the callbacks requested the stop of the Hub.
-        """
-
-    def on_pair(self, myo, timestamp, firmware_version):
-        """
-        Called when a Myo armband is paired.
-        """
-
-    def on_unpair(self, myo, timestamp):
-        """
-        Called when a Myo armband is unpaired.
-        """
-
     def on_disconnect(self, myo, timestamp):
         """
         Called when a Myo is disconnected.
         """
 
-        line1 = "Myo disconnected!!!!"
-        time = 5000 #in miliseconds
- 
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
+        dialog = xbmcgui.Dialog()
+        dialog.ok("Myo disconnected")
 
     def on_arm_sync(self, myo, timestamp, arm, x_direction, rotation,
                     warmup_state):
@@ -200,22 +171,9 @@ class Listener(libmyo.DeviceListener):
         Called when a Myo armband and an arm is unsynced.
         """
 
-        line1 = "Myo unsynced!!!!"
-        time = 5000 #in miliseconds
- 
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-
-    def on_battery_level_received(self, myo, timestamp, level):
-        """
-        Called when the requested battery level received.
-        """
-
-    def on_warmup_completed(self, myo, timestamp, warmup_result):
-        """
-        Called when the warmup completed.
-        """
-
-
+        dialog = xbmcgui.Dialog()
+        dialog.ok("Myo unsynced")
+        
 def mainMyo():
     print("Connecting to Myo ... Use CTRL^C to exit.")
     try:
