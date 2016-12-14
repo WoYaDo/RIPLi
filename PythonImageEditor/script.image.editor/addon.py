@@ -9,29 +9,45 @@ import glob
 import os
 import threading
 
-from RIPLi import getFirstEvent
+from RIPLi import getFirstEvent,quitController
 
+"""
+Initializes th GUI
+"""
+root = Tk()
+
+"""
+Global callback that will be excuted when a gesture is detected
+"""
 leftCallback = lambda e: 0
 rightCallback = lambda e: 0
 returnCallback = lambda e: 0
 escapeCallback = lambda e: 0
 active = True
+
+"""
+Executes correct global callback depending on gesture
+(event loop)
+"""
 def executeCommand():
     print "starting execute command"
-  #  while active:
-    commandString = getFirstEvent()
-    print commandString
-    if commandString == 'WaveIn' or commandString == "SwipeLeft":
-        leftCallback(None)
-    elif commandString == 'WaveOut' or commandString == "SwipeRight":
-        rightCallback(None)
-    elif commandString == 'DoubleTap' or commandString == "WaveRight":
-        returnCallback(None)
-    elif commandString == 'FingersSpread' or commandString == "WaveLeft":
-        escapeCallback(None)
-    root.after(100,executeCommand)
+    if active:
+        commandString = getFirstEvent()
+        print commandString
+        if commandString == 'WaveIn' or commandString == "SwipeLeft":
+            leftCallback(None)
+        elif commandString == 'WaveOut' or commandString == "SwipeRight":
+            rightCallback(None)
+        elif commandString == 'DoubleTap' or commandString == "WaveRight":
+            returnCallback(None)
+        elif commandString == 'FingersSpread' or commandString == "WaveLeft":
+            escapeCallback(None)
+        root.after(100,executeCommand)
 
-root = Tk()
+"""
+Sets a global callback to a correct 'local' callback
+This depends on the current mode
+"""
 def setKey(key,callback):
     global leftCallback,rightCallback,returnCallback,escapeCallback
     if key == 'left':
@@ -47,13 +63,17 @@ def setKey(key,callback):
         #root.bind("<Escape>",callback)
         escapeCallback = callback
 
-def donothing():
-   return 0
-
+"""
+The current mode and their indexes are stored to show the menu buttons correctly
+"""
 currentmode = 'root'
 rootindex = 0
 editindex = 0
 
+
+"""
+The 'local' left callback for the root and the top-level edit mode
+"""
 def leftkey(event):
     global currentmode,rootindex,editindex,fileindex
     print "pressed left"
@@ -70,7 +90,9 @@ def leftkey(event):
     else:
         print currentmode
 
-
+"""
+The 'local' right callback for the root and the top-level edit mode
+"""
 def rightkey(event):
     global currentmode,rootindex,editindex,fileindex
     print "pressed right"
@@ -87,6 +109,9 @@ def rightkey(event):
     else:
         print currentmode
 
+"""
+The 'local' enter callback for the root and the top-level edit mode
+"""
 def enterKey(event):
     print "pressed enter"
     if currentmode == 'root':
@@ -98,6 +123,10 @@ def enterKey(event):
         print currentmode
    
 ######################root#####################
+"""
+Custom menu class (implemented as button), because Windows does not support editing of their native menus
+All mehthods that are provided by the Tkinter Menu class (and are used in the application) are reimplemented
+"""
 class MyMenu:
     def __init__(self,root):
         self.root = root
@@ -122,11 +151,15 @@ class MyMenu:
     def show(self):
         self.buttonframe.pack()
     
-
+"""
+Initialize and allocated a frame to show the image
+"""
 imageframe = Frame(root,height=200,width=300)
 
 
-
+"""
+Initializes the edit menu bar
+"""
 editmenubar = MyMenu(root)
 editmenubar.add_command(label="Rotate")
 editmenubar.add_command(label="Scale")
@@ -134,11 +167,17 @@ editmenubar.add_command(label="Brightness")
 editmenubar.add_command(label="Contrast")
 editmenubar.add_command(label="Filter")
 editmenubar.add_command(label="Close")
-editmenubar.show()
-editmenubar.hide()
 
+editmenubar.show()
+editmenubar.hide() #small hack to allocate the space in the window
+
+
+"""
+Method called when the 'edit' button is pushed
+This method hides the root menu, show the edit menu and initialzes the button functions
+"""
 def enterEditMode():
-    if (not imageframe.winfo_children()):
+    if (not imageframe.winfo_children()): #return if no image is selected
         return;
     global currentmode
 
@@ -161,40 +200,46 @@ def enterEditMode():
 
     
 
+""""
+Opens an image given a certain filename.
+It fills the image frame and removes the file explorer (filedialog)
 
+It initializes the image with an original image which is itself
+"""
 def openImage(filedialog,filename):
     filedialog.destroy()
     img = Image.open(filename)
     phimg = ImageTk.PhotoImage(img)
     phimg.current = img
     phimg.original = img
-    phimg.rotation = 0
     panel = Label(imageframe, image = phimg)
     panel.filename = filename
     panel.image = phimg
     panel.pack(side = "bottom", fill = "both", expand = "yes")
 
+    #reset the key callbacks
     setKey("left",leftkey)
     setKey("right",rightkey)
     setKey("return",enterKey)
 
+"""
+Opens an image given a certain filename. Function is called without filedialog.
+This function is called if main has parameter
+"""
 def openImage(filename):
     img = Image.open(filename)
     phimg = ImageTk.PhotoImage(img)
     phimg.current = img
     phimg.original = img
-    phimg.rotation = 0
     panel = Label(imageframe, image = phimg)
     panel.filename = filename
     panel.image = phimg
     panel.pack(side = "bottom", fill = "both", expand = "yes")
 
-    setKey("left",leftkey)
-    setKey("right",rightkey)
-    setKey("return",enterKey)
-
-
-
+"""
+Opens the file explorer to select an image to edit.
+If a previous image was selected, it will be removed
+"""
 def openfilemenu():
     for widget in imageframe.winfo_children():
         widget.destroy()
@@ -210,6 +255,7 @@ def openfilemenu():
     filenames = glob.glob(os.path.join(os.getcwd(), '*[.jpg ][.jpeg][.png][.gif]'))
     labels = []
 
+    #active state draws a rectangle around the selected image
     def left(event):
         labels[fileindex[0]].config(state="normal")
         fileindex[0] = max(0,fileindex[0] - 1)
@@ -221,6 +267,7 @@ def openfilemenu():
         labels[fileindex[0]].config(state="active")
         pass
 
+    #set the correct key callbacks
     setKey('left',left)
     setKey('right',right)
     setKey('return',lambda e: openImage(filedialog,filenames[fileindex[0]]))
@@ -241,14 +288,12 @@ def openfilemenu():
 
         labels.append(label)
 
+    #select the first image
     labels[fileindex[0]].config(state="active")
 
-
-
-
-
-
-
+"""
+Saves the current edit to the image with the original filename.
+"""
 def save():
     if (not imageframe.winfo_children()):
         return;
@@ -256,13 +301,19 @@ def save():
     label.image.current.save(label.filename)
     menubar.entryconfig(2,background="green")
 
+"""
+Quits the program and stops the event loop (executeCommand)
+"""
 def myquit():
     global active
     active =False
+    quitController()
     root.destroy()
 
     
-
+"""
+Initializes the main menu bar. Defined here because it requires the definition of all button methods 
+"""
 menubar = MyMenu(root)
 menubar.add_command(label="Edit", command=enterEditMode)
 menubar.add_command(label="Open", command=openfilemenu)
@@ -275,52 +326,62 @@ imageframe.pack()
 ###############################################
 
 ######################edit#####################
-
+"""
+Rotate the current selected image. It creates a new image but retains the original image to prevent the quality to drop significantly
+ly. It increases or deceases the rotation counter of the image so we can reuse the original image for the next rotation.
+"""
 def rotate_left(event):
     label = imageframe.winfo_children()[0]
-    rotation = label.image.rotation
+    rotation = label.rotation
     newrotation = rotation + 5
     newrotation %= 360
     newimage = label.image.original.rotate(newrotation,expand=True)
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
-    #newphimage.original = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = newrotation
+    label.rotation = newrotation
     label.configure(image=newphimage)
     label.image=newphimage
 
 
 def rotate_right(event):
     label = imageframe.winfo_children()[0]
-    rotation = label.image.rotation
+    rotation = label.rotation
     newrotation = rotation - 5
     newrotation %= -360
     newimage = label.image.original.rotate(newrotation,expand=True)
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
-    #newphimage.original = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = newrotation
+    label.rotation = newrotation
     label.configure(image=newphimage)
     label.image=newphimage
 
 def back(event):
     label = imageframe.winfo_children()[0]
     label.image.original = label.image.current
-    label.image.rotation = 0
+    label.rotation = 0
     setKey("left",leftkey)
     setKey("right",rightkey)
     editmenubar.entryconfig(editindex,background="red")
 
+"""
+Is called when the rotate option in the edit menu is selected.
+It intializes the current rotation to 0.
+The rotation is reset each time the rotate option is selected
+"""
 def rotate():
-    
+    label = imageframe.winfo_children()[0]
+    label.rotation = 0
     setKey("left", rotate_left)
     setKey("right",rotate_right)
     setKey("back",back)
 
 #######################################################
-
+"""
+Scales the current selected image. It creates a new image but retains the original image to prevent the quality to drop significantly
+ly. The scale factor is not stored because it can be calculated from the image dimensions. 
+"""
 def scale_left(event):
     label = imageframe.winfo_children()[0]
     newwidth = label.image.width() - 5
@@ -329,7 +390,6 @@ def scale_left(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
 
@@ -341,16 +401,22 @@ def scale_right(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
 
+"""
+Is called when the rotate option in the scale menu is selected.
+"""
 def scale():
     setKey("left", scale_left)
     setKey("right",scale_right)
     setKey("back",back)
 
 ###############################################
+"""
+Change the brightness of the current selected image. It creates a new image but retains the original image to prevent the quality to drop significantly
+ly. It increases or decreases the brightness of the image so we can reuse the original image for the next rotation.
+"""
 def brightness_left(event):
     label = imageframe.winfo_children()[0]
     oldbrightness = label.brightness
@@ -381,6 +447,11 @@ def brightness_right(event):
     label.image=newphimage
     label.brightness = newbrightness
 
+"""
+Is called when the rotate option in the edit menu is selected.
+It intializes the current brightness to 1.
+The rotation is reset each time the rotate option is selected
+"""
 def brightness():
     label = imageframe.winfo_children()[0]
     label.brightness = 1.0
@@ -389,6 +460,10 @@ def brightness():
     setKey("back",back)
 
 ###############################################
+"""
+Change the contrast of the current selected image. It creates a new image but retains the original image to prevent the quality to drop significantly
+ly. It increases or decreases the constrast of the image so we can reuse the original image for the next rotation.
+"""
 def contrast_left(event):
     label = imageframe.winfo_children()[0]
     oldcontrast = label.contrast
@@ -419,6 +494,11 @@ def contrast_right(event):
     label.image=newphimage
     label.contrast = newcontrast
 
+"""
+Is called when the contrast option in the edit menu is selected.
+It intializes the current contrast to 1.
+The contrast is reset each time the rotate option is selected
+"""
 def contrast():
     label = imageframe.winfo_children()[0]
     label.contrast = 1.0
@@ -427,10 +507,16 @@ def contrast():
     setKey("back",back)
 
 ###############################################
+"""
+Black and white filter
+"""
 def filter1(image):
     im = image.convert("L")
     return im
 
+"""
+Sepia filter
+"""
 def filter2(image):
     def make_linear_ramp(white):
         ramp = []
@@ -444,11 +530,20 @@ def filter2(image):
     im.putpalette(sepia)
     return im
 
+"""
+Orignal image filter
+"""
 def filter0(image):
     return image
 
+"""
+List of filter functions
+"""
 filters = [filter0,filter1,filter2] 
 
+"""
+Loop over filters and apply it immedialty
+"""
 def filter_right(event):
     label = imageframe.winfo_children()[0]
     curfilter = label.filter
@@ -483,6 +578,10 @@ def filter_left(event):
     label.image=newphimage
     label.filter = newfilter
 
+"""
+Called when the filter option button is pushed.
+Named ifilter because filter already exists
+"""
 def ifilter():
     label = imageframe.winfo_children()[0]
     label.filter = 0
