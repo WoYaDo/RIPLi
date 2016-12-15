@@ -126,15 +126,8 @@ class Listener(libmyo.DeviceListener):
             self.pose_lock = False
             self.pose = pose
 
-    def on_orientation_data(self, myo, timestamp, orientation):
-        pass
-        #self.orientation = orientation
-        #self.output()
+  
 
-    def on_accelerometor_data(self, myo, timestamp, accelerationpass
-
-    def on_gyroscope_data(self, myo, timestamp, gyroscope):
-        pass
 
     def on_emg_data(self, myo, timestamp, emg):
         self.emg = emg
@@ -147,55 +140,6 @@ class Listener(libmyo.DeviceListener):
     def on_lock(self, myo, timestamp):
         self.locked = True
         self.output()
-
-    def on_event(self, kind, event):
-        """
-        Called before any of the event callbacks.
-        """
-
-    def on_event_finished(self, kind, event):
-        """
-        Called after the respective event callbacks have been
-        invoked. This method is *always* triggered, even if one of
-        the callbacks requested the stop of the Hub.
-        """
-
-    def on_pair(self, myo, timestamp, firmware_version):
-        """
-        Called when a Myo armband is paired.
-        """
-
-    def on_unpair(self, myo, timestamp):
-        """
-        Called when a Myo armband is unpaired.
-        """
-
-    def on_disconnect(self, myo, timestamp):
-        """
-        Called when a Myo is disconnected.
-        """
-
-    def on_arm_sync(self, myo, timestamp, arm, x_direction, rotation,
-                    warmup_state):
-        """
-        Called when a Myo armband and an arm is synced.
-        """
-
-    def on_arm_unsync(self, myo, timestamp):
-        """
-        Called when a Myo armband and an arm is unsynced.
-        """
-
-    def on_battery_level_received(self, myo, timestamp, level):
-        """
-        Called when the requested battery level received.
-        """
-
-    def on_warmup_completed(self, myo, timestamp, warmup_result):
-        """
-        Called when the warmup completed.
-        """
-
 
 def mainMyo():
     print("Connecting to Myo ... Use CTRL^C to exit.")
@@ -228,23 +172,27 @@ try:
 except(IOError):
     print "Running in myo only mode"
 
+#Only run the mainKinect if we can connect to the Kinect
 def mainKinect():
     while kinectConnected:
         global i
         s = 'Message[{0}]'.format(i)
         i += 1
-        n = struct.unpack('I', f.read(4))[0]    # Read str length
-        s = f.read(n)                           # Read str
-        f.seek(0)                               # Important!!!
+        n = struct.unpack('I', f.read(4))[0]    
+        s = f.read(n)                           
+        f.seek(0)                               
         GestureDispatcher(s)
 #-------------------------------------------------------------------------------
+"""
+Two threads are spawned because there are two input loops that do not end.
+These two threads enter something in a central queue these queue is then read in another loop
+"""
 q = Queue.Queue()
 t1 = threading.Thread(target=mainMyo)
-#t1.daemon = True
+
 t1.start()
 
 t2 = threading.Thread(target=mainKinect)
-#t2.daemon = True
 t2.start()
 
 def getFirstEvent():
