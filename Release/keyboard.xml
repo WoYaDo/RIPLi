@@ -1,12 +1,22 @@
 <keymap>
 	<slideshow>
 		<keyboard>
-			<key id="61453">runaddon(plugin.video.9gagtv)</key>
+			<key id="61572">runaddon(plugin.video.9gagtv)</key>
 		</keyboard>
 	</slideshow>
 	<global>
-		    <keyboard>
-			<key id="61572">runaddon(plugin.video.9gagtv)</key>
+		  <keyboard>
+			<key id="61572">select</key>
 		    </keyboard>
 	</global>
+	<fullscreenvideo>
+			  <keyboard>
+				<key id="61572">osd</key>
+			    </keyboard>
+	</fullscreenvideo>
+	<visualisation>
+			  <keyboard>
+				<key id="61572">osd</key>
+			    </keyboard>
+	</visualisation>
 </keymap>
