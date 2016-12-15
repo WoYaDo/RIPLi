@@ -18,18 +18,9 @@ def executeCommand(method):
 #-------------------------------------------------------------------------------
 # Event handlers + dispatchers etc.
 AdminMode = False
-def SwitchAdminMonde():
+def SwitchAdminMode():
     global AdminMode
     AdminMode = not(AdminMode)
-
-def DoubleTap():
-    q.put("DoubleTap")
-def WaveIn():
-    q.put("WaveIn")
-def WaveOut():
-    q.put("WaveOut")
-def FingersSpread():
-    q.put("FingersSpread")
 
 def WaveRight():
     q.put("WaveRight")
@@ -39,24 +30,23 @@ def SwipeLeft():
     q.put("SwipeLeft")
 def SwipeRight():
     q.put("SwipeRight")
-def Menu():
-    q.put("Menu")
 
 def MyoDispatcher(pose):
     global AdminMode
     if(pose == libmyo.Pose.fist):
         print "fist"
-        SwitchAdminMonde()
+        q.put("Fist")
+        SwitchAdminMode()
     elif(not(AdminMode)):
         pass
     elif(pose == libmyo.Pose.double_tap):
-        DoubleTap()
+        q.put("DoubleTap")
     elif(pose == libmyo.Pose.wave_in):
-        WaveIn()
+        q.put("WaveIn")
     elif(pose == libmyo.Pose.wave_out):
-        WaveOut()
+        q.put("WaveOut")
     elif(pose == libmyo.Pose.fingers_spread):
-        FingersSpread()
+        q.put("FingersSpread")
 
 def GestureDispatcher(gesture):
     if AdminMode:
@@ -65,7 +55,6 @@ def GestureDispatcher(gesture):
     elif gesture == 'Waved with left hand': WaveLeft()
     elif gesture == 'Swiped left': SwipeLeft()
     elif gesture =='Swiped right': SwipeRight()
-    elif gesture == 'Menu': Menu()
 #-------------------------------------------------------------------------------
 class Listener(libmyo.DeviceListener):
     """
@@ -73,7 +62,7 @@ class Listener(libmyo.DeviceListener):
     stop the Hub.
     """
 
-    interval = 0.05  # Output only 0.05 seconds
+    interval = 0.05  # Output only each 0.05 seconds
 
     def __init__(self):
         super(Listener, self).__init__()
@@ -142,7 +131,7 @@ class Listener(libmyo.DeviceListener):
         self.output()
 
 def mainMyo():
-    print("Connecting to Myo ... Use CTRL^C to exit.")
+    print("Connecting to Myo")
     try:
         hub = libmyo.Hub()
     except MemoryError:
@@ -163,25 +152,7 @@ def mainMyo():
         hub.shutdown()
 
 
-kinectConnected = False
-try:
-    time.sleep(2)
-    f = open(r'\\.\pipe\NPtest', 'r+b', 0)
-    i = 1
-    kinectConnected = True
-except(IOError):
-    print "Running in myo only mode"
 
-#Only run the mainKinect if we can connect to the Kinect
-def mainKinect():
-    while kinectConnected:
-        global i
-        s = 'Message[{0}]'.format(i)
-        i += 1
-        n = struct.unpack('I', f.read(4))[0]    
-        s = f.read(n)                           
-        f.seek(0)                               
-        GestureDispatcher(s)
 #-------------------------------------------------------------------------------
 """
 Two threads are spawned because there are two input loops that do not end.
@@ -189,15 +160,7 @@ These two threads enter something in a central queue these queue is then read in
 """
 q = Queue.Queue()
 t1 = threading.Thread(target=mainMyo)
-
 t1.start()
-
-t2 = threading.Thread(target=mainKinect)
-t2.start()
 
 def getFirstEvent():
     return q.get()
-
-def quitController():
-    t1.stop()
-    t2.stop()

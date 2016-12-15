@@ -9,13 +9,16 @@ import glob
 import os
 import threading
 
-from RIPLi import getFirstEvent,quitController
+import xbmc,xbmcgui
+
+from GestureController import getFirstEvent
 
 """
 Initializes th GUI
 """
 root = Tk()
-
+root.overrideredirect(True)
+root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
 """
 Global callback that will be excuted when a gesture is detected
 """
@@ -226,7 +229,7 @@ def openImage(filedialog,filename):
 Opens an image given a certain filename. Function is called without filedialog.
 This function is called if main has parameter
 """
-def openImage(filename):
+def openImageStandAlone(filename):
     img = Image.open(filename)
     phimg = ImageTk.PhotoImage(img)
     phimg.current = img
@@ -307,7 +310,7 @@ Quits the program and stops the event loop (executeCommand)
 def myquit():
     global active
     active =False
-    quitController()
+    #quitController()
     root.destroy()
 
     
@@ -610,11 +613,23 @@ setKey("left",leftkey)
 setKey("right",rightkey)
 setKey("return",enterKey)
 
-root.after(100,executeCommand)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        root.after(0,openImage,sys.argv[1])
-        root.mainloop()
+        root.after(0,openImageStandAlone,sys.argv[1])
+     #   root.mainloop()
     else:
-        root.mainloop()
+     #   root.mainloop()
+     pass
+
+while True:
+     commandString = getFirstEvent()
+     if commandString == "Fist":
+         root.after(100,executeCommand)
+         root.mainloop()
+         dialog = xbmcgui.Dialog()
+         dialog.ok("Attention","Please make a fist and enter to close this message")
+         break 
+     else:
+        pass

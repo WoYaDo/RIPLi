@@ -19,11 +19,11 @@ def executeCommand(method):
     url = start + method + end
     response = urllib2.urlopen(url)
     html = response.read()
-    #print(html)
+    #print method
 #-------------------------------------------------------------------------------
 # Event handlers + dispatchers etc.
 AdminMode = False
-def SwitchAdminMonde():
+def SwitchAdminMode():
     global AdminMode
     AdminMode = not(AdminMode)
 
@@ -52,8 +52,8 @@ def MyoDispatcher(pose):
     if(pose == libmyo.Pose.fist):
         print "fist"
         dialog = xbmcgui.Dialog()
-        dialog.ok("Fisted!!")
-        SwitchAdminMonde()
+        dialog.notification("Attention","Fisted!!",time=500)
+        SwitchAdminMode()
     elif(not(AdminMode)):
         pass
     elif(pose == libmyo.Pose.double_tap):
@@ -158,7 +158,7 @@ class Listener(libmyo.DeviceListener):
         """
 
         dialog = xbmcgui.Dialog()
-        dialog.ok("Myo disconnected")
+        dialog.notification("Attention","Myo disconnected")
 
     def on_arm_sync(self, myo, timestamp, arm, x_direction, rotation,
                     warmup_state):
@@ -172,7 +172,7 @@ class Listener(libmyo.DeviceListener):
         """
 
         dialog = xbmcgui.Dialog()
-        dialog.ok("Myo unsynced")
+        dialog.notification("Attention","Myo unsynced")
         
 def mainMyo():
     print("Connecting to Myo ... Use CTRL^C to exit.")
@@ -209,9 +209,9 @@ def mainKinect():
         global i
         s = 'Message[{0}]'.format(i)
         i += 1
-        n = struct.unpack('I', f.read(4))[0]    # Read str length
-        s = f.read(n)                           # Read str
-        f.seek(0)                               # Important!!!
+        n = struct.unpack('I', f.read(4))[0]
+        s = f.read(n)                       
+        f.seek(0)                           
         GestureDispatcher(s)
    
 #-------------------------------------------------------------------------------
