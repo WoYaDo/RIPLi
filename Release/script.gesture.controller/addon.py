@@ -196,6 +196,7 @@ def mainMyo():
 #-------------------------------------------------------------------------------
 #Main function to start up Kinect
 def mainKinect():
+    global i
     #Try to connect to the pipe created by KinectSkeletonTracker.exe
     kinectConnected = False
     try:
@@ -207,7 +208,6 @@ def mainKinect():
         print "Running in myo only mode"
 
     while kinectConnected:
-        global i
         s = 'Message[{0}]'.format(i)
         i += 1
         n = struct.unpack('I', f.read(4))[0]
