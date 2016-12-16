@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<onload condition="System.HasAddon(script.artistslideshow)">RunScript(script.artistslideshow)</onload>
+	<onload condition="!Skin.HasSetting(ForceOSDBottom)">SetProperty(SidebarPos,$INFO[Skin.String(HOM.View1.BBSidebar)],Home)</onload>
+	<onload condition="!Skin.HasSetting(ForceOSDBottom)">SetProperty(DialogPos,$INFO[Skin.String(HOM.View1.DIAPanel)],Home)</onload>
+	<onload condition="Skin.HasSetting(ForceOSDBottom)">SetProperty(SidebarPos,BOTTOM,Home)</onload>
+	<onload condition="Skin.HasSetting(ForceOSDBottom)">SetProperty(DialogPos,BOTTOM,Home)</onload>
+	<onload condition="Skin.HasSetting(ForceOSDBottom)">Skin.SetString(DIA.View1.BBSidebar,BOTTOM)</onload>
+	<onload condition="Skin.HasSetting(ForceOSDBottom)">Skin.SetString(DIA.View1.DIAPanel,BOTTOM)</onload>	
+	<onload>SetProperty(CompPrefix,HOM.View1,Home)</onload>		
+
+	<!-- visualisation -->
+	<controls>
+
+		<!-- Visualisation -->
+		<control type="visualisation" id="2">
+			<visible>Player.HasAudio + [!Skin.HasSetting(ArtistslideShow) | [System.HasAddon(script.artistslideshow) + Skin.HasSetting(VisualisationShow)]]</visible>
+		</control>
+
+		<!-- Artist slideshow -->
+		<control type="multiimage">
+			<imagepath background="true">$INFO[Window(Visualisation).Property(ArtistSlideshow)]</imagepath>
+			<aspectratio>scale</aspectratio>
+			<timeperimage>10000</timeperimage>
+			<fadetime>2000</fadetime>
+			<randomize>true</randomize>
+			<visible>Player.HasAudio + System.HasAddon(script.artistslideshow) + Skin.HasSetting(ArtistslideShow)</visible>
+			<animation effect="fade" start="100" end="50" time="0" condition="Skin.HasSetting(VisualisationShow)">Conditional</animation>
+		</control>
+
+
+	</controls>
+
+</window>
