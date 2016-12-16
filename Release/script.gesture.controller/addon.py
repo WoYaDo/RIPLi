@@ -22,8 +22,18 @@ def executeCommand(method):
 
 # Send our fake enter = pageup
 def executeEnter():
-    response = urllib2.urlopen('http://localhost:8080/jsonrpc?request={%20%22jsonrpc%22:%20%222.0%22,%20%22method%22:%20%22Input.ExecuteAction%22,%20%22params%22:%20{%20%22action%22:%20%22pageup%22%20},%20%22id%22:%201%20}')
+    response = urllib2.urlopen('http://localhost:8080/jsonrpc?request={%20%22jsonrpc%22:%20%222.0%22,%20%22method%22:%20%22Input.ExecuteAction%22,%20%22params%22:%20{%20%22action%22:%20%22select%22%20},%20%22id%22:%201%20}')
     html = response.read()
+    response = urllib2.urlopen('http://localhost:8080/jsonrpc?request={%20%22jsonrpc%22:%20%222.0%22,%20%22method%22:%20%22Input.ExecuteAction%22,%20%22params%22:%20{%20%22action%22:%20%22osd%22%20},%20%22id%22:%201%20}')
+    html = response.read()
+
+    path= xbmc.getInfoLabel('Slideshow.Filename	')
+    
+    
+    if path:
+        filename = "C:\\\\Users\\\\Yannick\\\\Pictures\\\\" + path
+        response = urllib2.urlopen('http://localhost:8080/jsonrpc?request={%20%22jsonrpc%22:%20%222.0%22,%20%22method%22:%20%22Addons.ExecuteAddon%22,%20%22params%22:%20{%20%22addonid%22:%20%22script.image.editor%22,%20%22params%22:%20%22'+ filename +'%22%20},%20%22id%22:%20%221%22%20}')
+        html = response.read()
 #-------------------------------------------------------------------------------
 # Event handlers + dispatchers etc.
 AdminMode = False
@@ -196,6 +206,7 @@ def mainMyo():
 #-------------------------------------------------------------------------------
 #Main function to start up Kinect
 def mainKinect():
+    global i
     #Try to connect to the pipe created by KinectSkeletonTracker.exe
     kinectConnected = False
     try:
@@ -207,7 +218,6 @@ def mainKinect():
         print "Running in myo only mode"
 
     while kinectConnected:
-        global i
         s = 'Message[{0}]'.format(i)
         i += 1
         n = struct.unpack('I', f.read(4))[0]
