@@ -12,14 +12,18 @@ import xbmc, xbmcgui
  
 
 
-# Send commands to Kodi
+# Send commands to Kodi via HTTP
 def executeCommand(method):
     start = 'http://localhost:8080/jsonrpc?request={"jsonrpc":%20"2.0",%20"id":%201,%20"method":%20"'
     end = '"}'
     url = start + method + end
     response = urllib2.urlopen(url)
     html = response.read()
-    #print method
+
+# Send our fake enter = pageup
+def executeEnter():
+    response = urllib2.urlopen('http://localhost:8080/jsonrpc?request={%20%22jsonrpc%22:%20%222.0%22,%20%22method%22:%20%22Input.ExecuteAction%22,%20%22params%22:%20{%20%22action%22:%20%22pageup%22%20},%20%22id%22:%201%20}')
+    html = response.read()
 #-------------------------------------------------------------------------------
 # Event handlers + dispatchers etc.
 AdminMode = False
@@ -50,7 +54,6 @@ def Menu():
 def MyoDispatcher(pose):
     global AdminMode
     if(pose == libmyo.Pose.fist):
-        print "fist"
         dialog = xbmcgui.Dialog()
         dialog.notification("Attention","Fisted!!",time=500)
         SwitchAdminMode()
@@ -74,6 +77,7 @@ def GestureDispatcher(gesture):
     elif gesture =='Swiped right': SwipeRight()
     elif gesture == 'Menu': Menu()
 #-------------------------------------------------------------------------------
+#based on => https://github.com/NiklasRosenstein/myo-python/blob/master/examples/hello_myo.py
 class Listener(libmyo.DeviceListener):
     """
     Listener implementation. Return False from any function to
@@ -135,10 +139,6 @@ class Listener(libmyo.DeviceListener):
 
     def on_orientation_data(self, myo, timestamp, orientation):
         pass
-        #self.orientation = orientation
-        #self.output()
-
-
 
     def on_emg_data(self, myo, timestamp, emg):
         self.emg = emg
@@ -156,7 +156,6 @@ class Listener(libmyo.DeviceListener):
         """
         Called when a Myo is disconnected.
         """
-
         dialog = xbmcgui.Dialog()
         dialog.notification("Attention","Myo disconnected")
 
@@ -170,10 +169,10 @@ class Listener(libmyo.DeviceListener):
         """
         Called when a Myo armband and an arm is unsynced.
         """
-
         dialog = xbmcgui.Dialog()
         dialog.notification("Attention","Myo unsynced")
-        
+
+#Main function to start up Myo
 def mainMyo():
     print("Connecting to Myo ... Use CTRL^C to exit.")
     try:
@@ -194,17 +193,19 @@ def mainMyo():
     finally:
         print("Shutting down hub...")
         hub.shutdown()
-
-kinectConnected = False
-try:
-    time.sleep(2)
-    f = open(r'\\.\pipe\NPtest', 'r+b', 0)
-    i = 1
-    kinectConnected = True
-except(IOError):
-    print "Running in myo only mode"
-
+#-------------------------------------------------------------------------------
+#Main function to start up Kinect
 def mainKinect():
+    #Try to connect to the pipe created by KinectSkeletonTracker.exe
+    kinectConnected = False
+    try:
+        time.sleep(2)
+        f = open(r'\\.\pipe\NPtest', 'r+b', 0)
+        i = 1
+        kinectConnected = True
+    except(IOError):
+        print "Running in myo only mode"
+
     while kinectConnected:
         global i
         s = 'Message[{0}]'.format(i)
@@ -213,27 +214,27 @@ def mainKinect():
         s = f.read(n)                       
         f.seek(0)                           
         GestureDispatcher(s)
-   
 #-------------------------------------------------------------------------------
+#Queue receiving events
 q = Queue.Queue()
+
+#Starting Myo Thread
 t1 = threading.Thread(target=mainMyo)
 t1.daemon = True
 t1.start()
 
+#Starting Kinect Thread
 t2 = threading.Thread(target=mainKinect)
 t2.daemon = True
 t2.start()
 
-def quitController():
-    t1.stop()
-    t2.stop()
-
+#Processing events in the Queue
 while True:
     s = q.get()
     if(s == "FingersSpread" or s == "WaveLeft"):
         executeCommand("Input.Back")
     elif(s == "DoubleTap" or s ==  "WaveRight"):
-        executeCommand("Input.Select")
+        executeEnter()
     elif(s == "WaveIn" or s == "SwipeLeft"):
         executeCommand("Input.Left")
     elif(s == "WaveOut" or s == "SwipeRight"):
