@@ -65,7 +65,10 @@ def MyoDispatcher(pose):
     global AdminMode
     if(pose == libmyo.Pose.fist):
         dialog = xbmcgui.Dialog()
-        dialog.notification("Attention","Fisted!!",time=500)
+        if AdminMode:
+            dialog.notification("Attention","Left adminmode",time=500)
+        else:
+            dialog.notification("Attention","Entered adminmode",time=500)
         SwitchAdminMode()
     elif(not(AdminMode)):
         pass

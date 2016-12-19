@@ -430,7 +430,6 @@ def brightness_left(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
     label.brightness = newbrightness
@@ -445,7 +444,6 @@ def brightness_right(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
     label.brightness = newbrightness
@@ -477,7 +475,6 @@ def contrast_left(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
     label.contrast = newcontrast
@@ -492,7 +489,6 @@ def contrast_right(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
     label.contrast = newcontrast
@@ -559,7 +555,6 @@ def filter_right(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
     label.filter = newfilter
@@ -576,7 +571,6 @@ def filter_left(event):
     newphimage = ImageTk.PhotoImage(newimage)
     newphimage.current = newimage
     newphimage.original = label.image.original
-    newphimage.rotation = label.image.rotation
     label.configure(image=newphimage)
     label.image=newphimage
     label.filter = newfilter
@@ -618,10 +612,11 @@ setKey("return",enterKey)
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         root.after(0,openImageStandAlone,sys.argv[1])
-     #   root.mainloop()
     else:
-     #   root.mainloop()
-     pass
+        pass
+
+dialog = xbmcgui.Dialog()
+dialog.notification("Attention","Fist to start image editor",time=500)
 
 while True:
      commandString = getFirstEvent()
